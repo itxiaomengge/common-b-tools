@@ -1,0 +1,4 @@
+#jwtAuth
+JwtAuth:
+  AccessSecret: 7a923723-90af-4d81-933c-5de028baafb6
+  AccessExpire: 43200  # 12 小时
