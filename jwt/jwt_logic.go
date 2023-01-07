@@ -25,6 +25,7 @@ func GenerateToken(userId int64, userName string) (string, error) {
 	// 有 flag.Parse() 时，会把用户传递的命令行参数解析为对应变量的值
 	flag.Parse()
 	var c Config
+
 	// 将 configFile 写入 c
 	conf.MustLoad(*configFile, &c)
 	accessSecret := c.JwtAuth.AccessSecret
@@ -79,7 +80,8 @@ func ParseToken(tokenString string) (int64, error) {
 	}
 
 	claims := make(jwt.MapClaims, 0)
-	//claims := make(map[string]interface{}, 0)
+	// 或
+	// claims := make(map[string]interface{}, 0)
 	err = json.Unmarshal(payload, &claims)
 	if err != nil {
 		return 0, err
