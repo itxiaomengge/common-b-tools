@@ -18,7 +18,7 @@ import (
 // @Param req *GenerateTokenReq
 //
 // @return *result.Res
-func GenerateToken(userId string, userName string) (string, error) {
+func GenerateToken(userId int64, userName string) (string, error) {
 	now := time.Now().Unix()
 
 	configFile := flag.String("f", "jwt_config.yml", "the config file")
@@ -51,7 +51,7 @@ func GenerateToken(userId string, userName string) (string, error) {
 //
 // @return string
 // @return error
-func getJwtToken(secretKey string, iat int64, seconds int64, userId string, userName string) (string, error) {
+func getJwtToken(secretKey string, iat int64, seconds int64, userId int64, userName string) (string, error) {
 	claims := make(jwt.MapClaims)
 	claims["exp"] = iat + seconds
 	claims["iat"] = iat
