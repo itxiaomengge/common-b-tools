@@ -21,7 +21,7 @@ import (
 func GenerateToken(userId int64, userName string) (string, error) {
 	now := time.Now().Unix()
 
-	configFile := flag.String("f", "jwt_config.yml", "the config file")
+	configFile := flag.String("jwtconfig", "./jwt_config.yml", "the config file")
 	// 有 flag.Parse() 时，会把用户传递的命令行参数解析为对应变量的值
 	flag.Parse()
 	var c Config

@@ -10,7 +10,7 @@ import (
 
 func Test_JWT(t *testing.T) {
 	req := &GenerateTokenReq{
-		UserId:   "12341243",
+		UserId:   12341243,
 		UserName: "Xiaomeng.Ge",
 	}
 
