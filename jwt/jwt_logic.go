@@ -4,11 +4,15 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
-	"flag"
-	"github.com/zeromicro/go-zero/core/conf"
 	"encoding/json"
 	"strings"
+	_ "embed"
+	"github.com/zeromicro/go-zero/core/conf"
 )
+
+// 将 jwt_config.yml 文件嵌入到编译的二进制文件中，这样打包成二进制文件时才能正常使用相对路径进行调用
+//go:embed jwt_config.yml
+var configFileContent []byte
 
 // @Title GenerateToken
 // @Description 生成一个 Token 值，并将其封装返回
@@ -21,13 +25,12 @@ import (
 func GenerateToken(userId int64, userName string) (string, error) {
 	now := time.Now().Unix()
 
-	configFile := flag.String("jwtconfig", "./jwt_config.yml", "the config file")
-	// 有 flag.Parse() 时，会把用户传递的命令行参数解析为对应变量的值
-	flag.Parse()
 	var c Config
-
 	// 将 configFile 写入 c
-	conf.MustLoad(*configFile, &c)
+	err := conf.LoadFromYamlBytes(configFileContent, &c)
+	if err != nil {
+		return "", err
+	}
 	accessSecret := c.JwtAuth.AccessSecret
 	accessExpire := c.JwtAuth.AccessExpire
 	accessToken, err := getJwtToken(accessSecret, now, accessExpire, userId, userName)
