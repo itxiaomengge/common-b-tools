@@ -1,4 +1,4 @@
-package middleware
+package response
 
 const (
 	CODE_SUCCESS = 20000 // 成功

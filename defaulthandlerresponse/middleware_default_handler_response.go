@@ -1,4 +1,4 @@
-package middleware
+package response
 
 // 返回结果结构
 type DefaultHandlerResponse struct {
