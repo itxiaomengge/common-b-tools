@@ -37,7 +37,7 @@ func HandlerResponseResult(r *http.Request, w http.ResponseWriter, resp interfac
 }
 
 // Error 得到错误状态码
-func GetErrorCode(w http.ResponseWriter, err error, fns ...func(w http.ResponseWriter, err error)) int {
+func GetErrorCode(w http.ResponseWriter, err error) int {
 	lock.RLock()
 	handler := errorHandler
 	lock.RUnlock()
@@ -46,8 +46,7 @@ func GetErrorCode(w http.ResponseWriter, err error, fns ...func(w http.ResponseW
 }
 
 // ErrorCtx 得到错误状态码
-func GetErrorCtxCode(ctx context.Context, w http.ResponseWriter, err error,
-	fns ...func(w http.ResponseWriter, err error)) int {
+func GetErrorCtxCode(ctx context.Context, w http.ResponseWriter, err error) int {
 	lock.RLock()
 	handlerCtx := errorHandlerCtx
 	lock.RUnlock()
@@ -68,10 +67,11 @@ func doHandleError(w http.ResponseWriter, err error, handler func(error) (int, i
 		if IsGrpcError(err) {
 			// don't unwrap error and get status.Message(),
 			// it hides the rpc error headers.
-			http.Error(w, err.Error(), CodeFromGrpcError(err))
-			return CodeFromGrpcError(err)
+			statusCode := CodeFromGrpcError(err)
+			WriteErrorCode(w, statusCode)
+			return statusCode
 		} else {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			WriteErrorCode(w, http.StatusBadRequest)
 			return http.StatusBadRequest
 		}
 	}
@@ -82,10 +82,17 @@ func doHandleError(w http.ResponseWriter, err error, handler func(error) (int, i
 		return code
 	}
 
-	e, ok := body.(error)
+	_, ok := body.(error)
 	if ok {
-		http.Error(w, e.Error(), code)
+		WriteErrorCode(w, code)
 	}
 
 	return code
+}
+
+// 将错误状态码写入 w
+func WriteErrorCode(w http.ResponseWriter, code int) {
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	w.WriteHeader(code)
 }
